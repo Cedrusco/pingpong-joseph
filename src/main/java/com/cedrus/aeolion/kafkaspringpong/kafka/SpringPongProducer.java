@@ -26,22 +26,9 @@ public class SpringPongProducer {
         Properties kafkaProps = new Properties();
         kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
         kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        kafkaProps.put(
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        kafkaProps.put("transactional.id", "my-transactional-id");
+        kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         Producer<String, String> producer = new KafkaProducer<>(kafkaProps);
-
-        producer.initTransactions();
-
-        try {
-            producer.beginTransaction();
-            producer.send(new ProducerRecord<>(topic, "", message));
-            producer.commitTransaction();
-        } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
-            producer.close();
-        } catch (KafkaException e) {
-            producer.abortTransaction();
-        }
+        producer.send(new ProducerRecord<>(topic, "", message));
         producer.close();
     }
 }
