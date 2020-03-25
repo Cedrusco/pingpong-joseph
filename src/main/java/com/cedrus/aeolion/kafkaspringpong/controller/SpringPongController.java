@@ -1,5 +1,6 @@
 package com.cedrus.aeolion.kafkaspringpong.controller;
 
+import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,15 +10,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SpringPongController {
+    @Autowired private TopicConfig topicConfig;
     @Autowired private SpringPongProducer producer;
 
-    @RequestMapping(value = "/ball", method = RequestMethod.POST)
+    @RequestMapping(value = "/ping", method = RequestMethod.POST)
     @ResponseBody
     public void producePing() {
-        createBall("ping");
+        createResponse(topicConfig.getPing());
     }
 
-    private void createBall(String topic) {
-        producer.sendMessage(topic, "Ball Created");
+    @RequestMapping(value = "/pong", method = RequestMethod.POST)
+    @ResponseBody
+    public void producePong() {
+        createResponse(topicConfig.getPong());
+    }
+
+    private void createResponse(String topic) {
+        producer.sendMessage(topic, String.format("\"topic: %s\"", topic));
     }
 }
