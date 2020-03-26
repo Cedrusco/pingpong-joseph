@@ -10,8 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SpringPongController {
-    @Autowired private TopicConfig topicConfig;
-    @Autowired private SpringPongProducer producer;
+    private TopicConfig topicConfig;
+    private SpringPongProducer producer;
+
+    @Autowired
+    public SpringPongController(TopicConfig topicConfig, SpringPongProducer producer) {
+        this.topicConfig = topicConfig;
+        this.producer = producer;
+    }
 
     @RequestMapping(value = "/ping", method = RequestMethod.POST)
     @ResponseBody

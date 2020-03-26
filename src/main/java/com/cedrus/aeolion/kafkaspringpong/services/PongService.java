@@ -11,11 +11,17 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class PongService {
-    @Autowired private TopicConfig topicConfig;
-    @Autowired private KafkaConfig kafkaConfig;
-    @Autowired private AppConfig appConfig;
+    private TopicConfig topicConfig;
+    private KafkaConfig kafkaConfig;
+    private AppConfig appConfig;
+    private SpringPongConsumer consumer;
 
-    @Autowired private SpringPongConsumer consumer;
+    public PongService (TopicConfig topicConfig, KafkaConfig kafkaConfig, AppConfig appConfig, SpringPongConsumer consumer) {
+        this.topicConfig = topicConfig;
+        this.kafkaConfig = kafkaConfig;
+        this.appConfig = appConfig;
+        this.consumer = consumer;
+    }
 
     public void startPong() {
         consumer.listen(topicConfig.getPong());

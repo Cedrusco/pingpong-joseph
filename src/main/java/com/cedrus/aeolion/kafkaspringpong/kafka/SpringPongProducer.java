@@ -14,7 +14,12 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class SpringPongProducer {
-    @Autowired private KafkaConfig kafkaConfig;
+    private KafkaConfig kafkaConfig;
+
+    @Autowired
+    public SpringPongProducer (KafkaConfig kafkaConfig) {
+        this.kafkaConfig = kafkaConfig;
+    }
 
     public void sendMessage(String topic, String message) {
         log.info("Sending message: " + message);

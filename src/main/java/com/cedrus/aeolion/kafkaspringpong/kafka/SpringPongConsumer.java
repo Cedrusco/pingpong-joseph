@@ -14,8 +14,14 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class SpringPongConsumer {
-    @Autowired private TopicConfig topicConfig;
-    @Autowired private KafkaConfig kafkaConfig;
+    private TopicConfig topicConfig;
+    private KafkaConfig kafkaConfig;
+
+    @Autowired
+    public SpringPongConsumer (TopicConfig topicConfig, KafkaConfig kafkaConfig) {
+        this.topicConfig = topicConfig;
+        this.kafkaConfig = kafkaConfig;
+    }
 
     public void listen(String topic) {
         String deserializer = kafkaConfig.getDeserializer();

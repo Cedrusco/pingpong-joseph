@@ -11,8 +11,14 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class KafkaSpringPongApplication {
-	@Autowired private PingService pingService;
-	@Autowired private PongService pongService;
+	private PingService pingService;
+	private PongService pongService;
+
+	@Autowired
+	public KafkaSpringPongApplication(PingService pingService, PongService pongService) {
+		this.pingService = pingService;
+		this.pongService = pongService;
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(KafkaSpringPongApplication.class, args);
