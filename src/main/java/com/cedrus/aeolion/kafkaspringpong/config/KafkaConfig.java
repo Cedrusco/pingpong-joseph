@@ -11,4 +11,9 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "kafka")
 public class KafkaConfig {
     private String bootstrapServers;
+    private String groupId;
+    private String enableAutoCommit;
+    private String autoCommitInterval;
+    private String serializer;
+    private String deserializer;
 }

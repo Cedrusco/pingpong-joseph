@@ -19,10 +19,12 @@ public class SpringPongProducer {
     public void sendMessage(String topic, String message) {
         log.info("Sending message: " + message);
 
+        String serializer = kafkaConfig.getSerializer();
+
         Properties kafkaProps = new Properties();
         kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
-        kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializer);
+        kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializer);
         Producer<String, String> producer = new KafkaProducer<>(kafkaProps);
         producer.send(new ProducerRecord<>(topic, null, message));
         producer.close();
