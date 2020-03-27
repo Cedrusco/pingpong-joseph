@@ -2,6 +2,7 @@ package com.cedrus.aeolion.kafkaspringpong.kafka;
 
 import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
+import com.cedrus.aeolion.kafkaspringpong.model.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,8 @@ public class SpringPongConsumer {
         this.kafkaConfig = kafkaConfig;
     }
 
-    public void listen(String topic) {
+    public void listen(String topic, java.util.function.Consumer<Message> callbackHandler) {
+        log.info(String.format("Listening for topic \"%s\"", topic));
         String deserializer = kafkaConfig.getDeserializer();
 
         Properties kafkaProps = new Properties();
@@ -37,8 +39,11 @@ public class SpringPongConsumer {
         consumer.subscribe(Arrays.asList(topicConfig.getPing(), topicConfig.getPong()));
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-            for (ConsumerRecord<String, String> record : records)
+            for (ConsumerRecord<String, String> record : records) {
                 log.info(String.format("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value()));
+                Message message = new Message(record.topic(), record.value());
+                callbackHandler.accept(message);
+            }
             consumer.commitAsync();
 //            consumer.close();
         }
