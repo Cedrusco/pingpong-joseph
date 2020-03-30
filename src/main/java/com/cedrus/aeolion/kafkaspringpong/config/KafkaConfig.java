@@ -16,4 +16,5 @@ public class KafkaConfig {
     private String autoCommitInterval;
     private String serializer;
     private String deserializer;
+    private String kafkaAppId;
 }
