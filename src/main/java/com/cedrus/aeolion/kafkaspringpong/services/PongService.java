@@ -5,6 +5,7 @@ import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongConsumer;
 import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongProducer;
+import com.cedrus.aeolion.kafkaspringpong.streams.SpringPongStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,21 +14,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class PongService {
     private TopicConfig topicConfig;
-    private KafkaConfig kafkaConfig;
-    private AppConfig appConfig;
-    private SpringPongProducer producer;
-    private SpringPongConsumer consumer;
+    private SpringPongStream pongStream;
 
     @Autowired
-    public PongService (TopicConfig topicConfig, KafkaConfig kafkaConfig, AppConfig appConfig, SpringPongProducer producer, SpringPongConsumer consumer) {
+    public PongService (TopicConfig topicConfig, SpringPongStream pongStream) {
         this.topicConfig = topicConfig;
-        this.kafkaConfig = kafkaConfig;
-        this.appConfig = appConfig;
-        this.producer = producer;
-        this.consumer = consumer;
+        this.pongStream = pongStream;
     }
 
-//    public void startPong() {
-//        consumer.listen(topicConfig.getPong());
-//    }
+    public void startPong() {
+        pongStream.createKStream(topicConfig.getPong());
+    }
 }
