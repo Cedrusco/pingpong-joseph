@@ -4,6 +4,7 @@ import com.cedrus.aeolion.kafkaspringpong.config.AppConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import com.cedrus.aeolion.kafkaspringpong.model.Message;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -33,16 +34,18 @@ public class SpringPongStream {
     }
 
     public void createKStream(String initialTopic) {
-        Serde<String> stringSerde = Serdes.String();
+        log.info("Listening on " + initialTopic + " --------");
         Properties streamsConfiguration = new Properties();
 
         streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, kafkaConfig.getKafkaAppId() + initialTopic);
         streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
 
         StreamsBuilder builder = new StreamsBuilder();
+        Serde<String> stringSerde = Serdes.String();
 
         KStream initialStream = builder.stream(initialTopic, Consumed.with(stringSerde, stringSerde));
         String nextTopic = initialTopic.equals(topicConfig.getPing()) ? topicConfig.getPong() : topicConfig.getPing();
+        log.info("next topic: " + nextTopic);
         KStream nextStream = initialStream.transformValues(delayVts());
         nextStream.to(nextTopic, Produced.with(stringSerde, stringSerde));
         KafkaStreams nextTopicStream = new KafkaStreams(builder.build(), streamsConfiguration);
@@ -65,17 +68,30 @@ public class SpringPongStream {
 
             @Override
             public String transform(String message) {
+                Message messageObj = new Message(message, message);
+
+                try {
+                    messageObj = new ObjectMapper().readValue(message, Message.class);
+                } catch (Exception e) {
+                    log.info(e.toString());
+                }
+
+                String newTopic = messageObj.getTopic().equals(topicConfig.getPing()) ? topicConfig.getPong() : topicConfig.getPing();
+                log.info("newTopic: " + newTopic);
+                messageObj.setTopic(newTopic);
+                messageObj.setMessage(Integer.toString(Integer.parseInt(messageObj.getMessage()) + 1));
+
+                log.info(messageObj.getMessage());
+
                 int minDelay = appConfig.getMinDelaySeconds();
                 int maxDelay = appConfig.getMaxDelaySeconds();
-
-                log.info(message);
 
                 Random random = new Random();
                 int sleepDuration = random.nextInt((maxDelay - minDelay)) + minDelay;
 
                 try {
                     Thread.sleep(sleepDuration * 1000);
-                    return message;
+                    return new ObjectMapper().writeValueAsString(messageObj);
                 } catch (Exception e) {
                     log.info(e.toString());
                 }
