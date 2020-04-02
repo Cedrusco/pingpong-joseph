@@ -39,13 +39,15 @@ public class SpringPongStream {
 
         streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, kafkaConfig.getKafkaAppId() + initialTopic);
         streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
+        streamsConfiguration.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        streamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 
         StreamsBuilder builder = new StreamsBuilder();
         Serde<String> stringSerde = Serdes.String();
 
+        // TODO: look into generics for the KStreams; use wherever possible
         KStream initialStream = builder.stream(initialTopic, Consumed.with(stringSerde, stringSerde));
         String nextTopic = initialTopic.equals(topicConfig.getPing()) ? topicConfig.getPong() : topicConfig.getPing();
-        log.info("next topic: " + nextTopic);
         KStream nextStream = initialStream.transformValues(delayVts());
         nextStream.to(nextTopic, Produced.with(stringSerde, stringSerde));
         KafkaStreams nextTopicStream = new KafkaStreams(builder.build(), streamsConfiguration);
@@ -81,7 +83,7 @@ public class SpringPongStream {
                 messageObj.setTopic(newTopic);
                 messageObj.setMessage(Integer.toString(Integer.parseInt(messageObj.getMessage()) + 1));
 
-                log.info(messageObj.getMessage());
+                log.info(messageObj.getTopic() + "! " + messageObj.getMessage());
 
                 int minDelay = appConfig.getMinDelaySeconds();
                 int maxDelay = appConfig.getMaxDelaySeconds();
