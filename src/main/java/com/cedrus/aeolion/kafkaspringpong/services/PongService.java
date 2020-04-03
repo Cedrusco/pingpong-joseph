@@ -1,10 +1,7 @@
 package com.cedrus.aeolion.kafkaspringpong.services;
 
-import com.cedrus.aeolion.kafkaspringpong.config.AppConfig;
-import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
+
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
-import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongConsumer;
-import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongProducer;
 import com.cedrus.aeolion.kafkaspringpong.streams.SpringPongStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -45,10 +45,9 @@ public class SpringPongStream {
         StreamsBuilder builder = new StreamsBuilder();
         Serde<String> stringSerde = Serdes.String();
 
-        // TODO: look into generics for the KStreams; use wherever possible
-        KStream initialStream = builder.stream(initialTopic, Consumed.with(stringSerde, stringSerde));
+        KStream<String, String> initialStream = builder.stream(initialTopic, Consumed.with(stringSerde, stringSerde));
         String nextTopic = initialTopic.equals(topicConfig.getPing()) ? topicConfig.getPong() : topicConfig.getPing();
-        KStream nextStream = initialStream.transformValues(delayVts());
+        KStream<String, String> nextStream = initialStream.transformValues(delayVts());
         nextStream.to(nextTopic, Produced.with(stringSerde, stringSerde));
         KafkaStreams nextTopicStream = new KafkaStreams(builder.build(), streamsConfiguration);
         nextTopicStream.start();
@@ -79,11 +78,10 @@ public class SpringPongStream {
                 }
 
                 String newTopic = messageObj.getTopic().equals(topicConfig.getPing()) ? topicConfig.getPong() : topicConfig.getPing();
-                log.info("newTopic: " + newTopic);
+                log.info(messageObj.getTopic() + "! " + messageObj.getMessage());
                 messageObj.setTopic(newTopic);
                 messageObj.setMessage(Integer.toString(Integer.parseInt(messageObj.getMessage()) + 1));
 
-                log.info(messageObj.getTopic() + "! " + messageObj.getMessage());
 
                 int minDelay = appConfig.getMinDelaySeconds();
                 int maxDelay = appConfig.getMaxDelaySeconds();

@@ -3,7 +3,6 @@ package com.cedrus.aeolion.kafkaspringpong.controller;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongProducer;
 import com.cedrus.aeolion.kafkaspringpong.model.Message;
-import com.cedrus.aeolion.kafkaspringpong.services.PingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SpringPongController {
     private TopicConfig topicConfig;
     private SpringPongProducer producer;
-    private PingService pingService;
 
     @Autowired
-    public SpringPongController(TopicConfig topicConfig, SpringPongProducer producer, PingService pingService) {
+    public SpringPongController(TopicConfig topicConfig, SpringPongProducer producer) {
         this.topicConfig = topicConfig;
         this.producer = producer;
-        this.pingService = pingService;
     }
 
     @RequestMapping(value = "/ping", method = RequestMethod.POST)
@@ -37,7 +34,6 @@ public class SpringPongController {
     }
 
     private void createResponse(String topic) throws JsonProcessingException {
-//        producer.sendMessage(topic, String.format("\"topic: %s\"", topic));
         producer.sendMessage(new Message(topic, "1"));
     }
 }
