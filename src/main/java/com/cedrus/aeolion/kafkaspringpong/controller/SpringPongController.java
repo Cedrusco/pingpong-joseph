@@ -3,12 +3,13 @@ package com.cedrus.aeolion.kafkaspringpong.controller;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongProducer;
 import com.cedrus.aeolion.kafkaspringpong.model.Message;
+import com.cedrus.aeolion.kafkaspringpong.model.SpringPongRequest;
+import com.cedrus.aeolion.kafkaspringpong.model.SpringPongResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class SpringPongController {
@@ -24,16 +25,37 @@ public class SpringPongController {
     @RequestMapping(value = "/ping", method = RequestMethod.POST)
     @ResponseBody
     public void producePing() throws JsonProcessingException {
-        createResponse(topicConfig.getPing());
+        addBall(topicConfig.getPing());
     }
 
     @RequestMapping(value = "/pong", method = RequestMethod.POST)
     @ResponseBody
     public void producePong() throws JsonProcessingException {
-        createResponse(topicConfig.getPong());
+        addBall(topicConfig.getPong());
     }
 
-    private void createResponse(String topic) throws JsonProcessingException {
+    @PostMapping(value = "/ball")
+    public ResponseEntity<SpringPongResponse> introduceBall(@RequestBody SpringPongRequest request) {
+        SpringPongResponse responseObj = new SpringPongResponse();
+
+        try {
+            if (request.getId() == null) {
+                throw new Exception("Request creation failed.");
+            } else {
+                addBall(topicConfig.getPing());
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(responseObj, HttpStatus.BAD_REQUEST);
+        }
+
+        responseObj.setSuccessIndicator(true);
+        responseObj.setResponseMessage("OK!");
+
+        return new ResponseEntity<>(responseObj, HttpStatus.OK);
+    }
+
+
+    private void addBall(String topic) throws JsonProcessingException {
         producer.sendMessage(new Message(topic, "1"));
     }
 }
