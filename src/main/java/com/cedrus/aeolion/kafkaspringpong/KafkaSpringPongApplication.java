@@ -31,10 +31,10 @@ public class KafkaSpringPongApplication {
 		};
 	}
 
-//	@Bean
-//	public CommandLineRunner pongRunner(ApplicationContext context) {
-//		return args -> {
-//			((PongService) context.getBean("pongService")).startPong();
-//		};
-//	}
+	@Bean
+	public CommandLineRunner pongRunner(ApplicationContext context) {
+		return args -> {
+			((PongService) context.getBean("pongService")).startPong();
+		};
+	}
 }
