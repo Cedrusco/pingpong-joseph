@@ -6,11 +6,13 @@ import com.cedrus.aeolion.kafkaspringpong.model.Message;
 import com.cedrus.aeolion.kafkaspringpong.model.SpringPongRequest;
 import com.cedrus.aeolion.kafkaspringpong.model.SpringPongResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 public class SpringPongController {
     private TopicConfig topicConfig;
@@ -45,6 +47,8 @@ public class SpringPongController {
                 addBall(topicConfig.getPing());
             }
         } catch (Exception e) {
+            responseObj.setResponseMessage(e.getMessage());
+            responseObj.setSuccessIndicator(false);
             return new ResponseEntity<>(responseObj, HttpStatus.BAD_REQUEST);
         }
 

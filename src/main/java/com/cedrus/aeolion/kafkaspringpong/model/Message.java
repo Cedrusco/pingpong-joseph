@@ -8,6 +8,8 @@ public class Message {
     private String topic;
     private String message;
 
+    public Message() {}
+
     @Autowired
     public Message(String topic, String message) {
         this.topic = topic;
