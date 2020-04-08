@@ -17,4 +17,5 @@ public class KafkaConfig {
     private String serializer;
     private String deserializer;
     private String kafkaAppId;
+    private String autoOffsetReset;
 }
