@@ -4,14 +4,14 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
-public class Message {
+public class SpringPongMessage {
     private String topic;
     private String message;
 
-    public Message() {}
+    public SpringPongMessage() {}
 
     @Autowired
-    public Message(String topic, String message) {
+    public SpringPongMessage(String topic, String message) {
         this.topic = topic;
         this.message = message;
     }

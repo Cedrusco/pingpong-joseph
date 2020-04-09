@@ -27,14 +27,16 @@ public class KafkaSpringPongApplication {
 	@Bean
 	public CommandLineRunner pingRunner(ApplicationContext context) {
 		return args -> {
-			((PingService) context.getBean("pingService")).startPing();
+			((PingService) context.getBean("pingService")).startPingStream();
 		};
 	}
 
 	@Bean
 	public CommandLineRunner pongRunner(ApplicationContext context) {
 		return args -> {
-			((PongService) context.getBean("pongService")).startPong();
+			((PongService) context.getBean("pongService")).startPongStream();
 		};
 	}
+
+
 }

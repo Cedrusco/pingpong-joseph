@@ -7,4 +7,5 @@ import lombok.Data;
 public class SpringPongRequest {
     // more fields to be added
     @JsonProperty private String id;
+    @JsonProperty private String color;
 }

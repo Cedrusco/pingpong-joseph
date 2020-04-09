@@ -3,7 +3,7 @@ package com.cedrus.aeolion.kafkaspringpong.streams;
 import com.cedrus.aeolion.kafkaspringpong.config.AppConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
-import com.cedrus.aeolion.kafkaspringpong.model.Message;
+import com.cedrus.aeolion.kafkaspringpong.model.SpringPongMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
@@ -69,10 +69,10 @@ public class SpringPongStream {
 
             @Override
             public String transform(String message) {
-                Message messageObj = new Message(message, message);
+                SpringPongMessage messageObj = new SpringPongMessage(message, message);
 
                 try {
-                    messageObj = new ObjectMapper().readValue(message, Message.class);
+                    messageObj = new ObjectMapper().readValue(message, SpringPongMessage.class);
                 } catch (Exception e) {
                     log.info(e.toString());
                 }

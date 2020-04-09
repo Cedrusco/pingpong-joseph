@@ -2,8 +2,9 @@ package com.cedrus.aeolion.kafkaspringpong.streams;
 
 import com.cedrus.aeolion.kafkaspringpong.config.AppConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
-import com.cedrus.aeolion.kafkaspringpong.model.Message;
+import com.cedrus.aeolion.kafkaspringpong.model.SpringPongMessage;
 import com.cedrus.aeolion.kafkaspringpong.model.SpringPongBall;
+import com.cedrus.aeolion.kafkaspringpong.model.Target;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
@@ -31,7 +32,7 @@ public class SpringPongTopology {
         this.objectMapper = objectMapper;
     }
 
-    public Topology getSPTopology(String target) {
+    public Topology getSPTopology(Target target) {
         Serde<String> stringSerde = Serdes.String();
         StreamsBuilder builder = new StreamsBuilder();
 
@@ -42,18 +43,22 @@ public class SpringPongTopology {
         return builder.build();
     }
 
-    private Predicate<String, String> getBranchPredicate(String target) {
+    private Predicate<String, String> getBranchPredicate(Target target) {
         return new Predicate<String, String>() {
             @Override
             public boolean test(String key, String value) {
+                log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~`! " + value);
                 SpringPongBall ball = getBallFromString(value);
+                log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~` " + ball.toString());
                 return ball.getTarget().equals(target);
             }
         };
     }
 
-    private SpringPongBall getBallFromString(String spbAsString) {
+    private SpringPongBall getBallFromString(String spbMessageString) {
         try {
+            SpringPongMessage spbMessage = objectMapper.readValue(spbMessageString, SpringPongMessage.class);
+            String spbAsString = spbMessage.getMessage();
             return objectMapper.readValue(spbAsString, SpringPongBall.class);
         } catch (Exception e) {
             log.error("Ball deserialization error.");
@@ -77,10 +82,11 @@ public class SpringPongTopology {
 
             @Override
             public String transform(String value) {
-                Message messageObj = new Message();
+                log.info("Transforming ball. Value is {}", value);
+                SpringPongMessage messageObj = new SpringPongMessage();
 
                 try {
-                    messageObj = new ObjectMapper().readValue(value, Message.class);
+                    messageObj = new ObjectMapper().readValue(value, SpringPongMessage.class);
                 } catch (Exception e) {
                     log.info(e.toString());
                 }
@@ -89,7 +95,7 @@ public class SpringPongTopology {
                 log.info("Sleeping for {} seconds.", sleepDuration);
                 try {
                     Thread.sleep(sleepDuration * 1000);
-                    return new ObjectMapper().writeValueAsString(messageObj);
+                    return value;
                 } catch (Exception e) {
                     log.error(e.toString());
                 }
