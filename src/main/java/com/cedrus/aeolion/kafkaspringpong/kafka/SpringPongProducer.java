@@ -1,9 +1,7 @@
 package com.cedrus.aeolion.kafkaspringpong.kafka;
 
 import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
-import com.cedrus.aeolion.kafkaspringpong.model.SpringPongMessage;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -17,15 +15,17 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class SpringPongProducer {
-    private KafkaConfig kafkaConfig;
+    private final KafkaConfig kafkaConfig;
+    private final TopicConfig topicConfig;
 
     @Autowired
-    public SpringPongProducer (KafkaConfig kafkaConfig) {
+    public SpringPongProducer (KafkaConfig kafkaConfig, TopicConfig topicConfig) {
         this.kafkaConfig = kafkaConfig;
+        this.topicConfig = topicConfig;
     }
 
-    public void sendMessage(SpringPongMessage message) throws JsonProcessingException {
-        log.info("Sending message: " + message.getMessage() +" on topic " + message.getTopic());
+    public void sendMessage(String message) {
+        log.info("Sending message: " + message +" on topic " + topicConfig.getPingPongTopic());
 
         String serializer = kafkaConfig.getSerializer();
 
@@ -34,7 +34,7 @@ public class SpringPongProducer {
         kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializer);
         kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializer);
         Producer<String, String> producer = new KafkaProducer<>(kafkaProps);
-        producer.send(new ProducerRecord<>(message.getTopic(), null, new ObjectMapper().writeValueAsString(message)));
+        producer.send(new ProducerRecord<>(topicConfig.getPingPongTopic(), null, message));
         producer.close();
     }
 }

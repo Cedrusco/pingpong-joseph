@@ -1,10 +1,10 @@
 package com.cedrus.aeolion.kafkaspringpong.model;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import lombok.NoArgsConstructor;
 
-@Slf4j
 @Data
+@NoArgsConstructor
 public class SpringPongBall {
     private String id;
     private String color;
@@ -16,16 +16,11 @@ public class SpringPongBall {
         this.target = target;
     }
 
-    public SpringPongBall() { }
-
     public void changeTarget() {
         if (this.target.equals(Target.PING)) {
             this.target = Target.PONG;
         } else {
             this.target = Target.PING;
         }
-        log.info("Target.PING is " + Target.PING);
-        log.info("Target.PONG is " + Target.PONG);
-        log.info("this.target is " + this.target);
     }
 }

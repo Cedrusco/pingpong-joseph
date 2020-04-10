@@ -2,7 +2,6 @@ package com.cedrus.aeolion.kafkaspringpong.streams;
 
 import com.cedrus.aeolion.kafkaspringpong.config.AppConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
-import com.cedrus.aeolion.kafkaspringpong.model.SpringPongMessage;
 import com.cedrus.aeolion.kafkaspringpong.model.SpringPongBall;
 import com.cedrus.aeolion.kafkaspringpong.model.Target;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,18 +46,14 @@ public class SpringPongTopology {
         return new Predicate<String, String>() {
             @Override
             public boolean test(String key, String value) {
-                log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~`! " + value);
                 SpringPongBall ball = getBallFromString(value);
-                log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~` " + ball.toString());
                 return ball.getTarget().equals(target);
             }
         };
     }
 
-    private SpringPongBall getBallFromString(String spbMessageString) {
+    private SpringPongBall getBallFromString(String spbAsString) {
         try {
-            SpringPongMessage spbMessage = objectMapper.readValue(spbMessageString, SpringPongMessage.class);
-            String spbAsString = spbMessage.getMessage();
             return objectMapper.readValue(spbAsString, SpringPongBall.class);
         } catch (Exception e) {
             log.error("Ball deserialization error.");
@@ -81,27 +76,19 @@ public class SpringPongTopology {
             public void init(ProcessorContext context) { }
 
             @Override
-            public String transform(String value) {
-                log.info("Transforming ball. Value is {}", value);
-                SpringPongMessage messageObj = new SpringPongMessage();
-
-                try {
-                    messageObj = new ObjectMapper().readValue(value, SpringPongMessage.class);
-                } catch (Exception e) {
-                    log.info(e.toString());
-                }
+            public String transform(String ballAsString) {
+                log.info("Transforming ball: {}", ballAsString);
+                SpringPongBall springPongBall = getBallFromString(ballAsString);
 
                 int sleepDuration = getSleepDurationInSeconds();
-                log.info("Sleeping for {} seconds.", sleepDuration);
+                log.info("Ball {} sleeping for {} seconds.", springPongBall.getId(), sleepDuration);
                 try {
                     Thread.sleep(sleepDuration * 1000);
-                    return value;
+                    springPongBall.changeTarget();
+                    return writeBallAsString(springPongBall);
                 } catch (Exception e) {
-                    log.error(e.toString());
+                    throw new RuntimeException(e);
                 }
-                SpringPongBall springPongBall = getBallFromString(value);
-                springPongBall.changeTarget();
-                return writeBallAsString(springPongBall);
             }
 
             @Override
