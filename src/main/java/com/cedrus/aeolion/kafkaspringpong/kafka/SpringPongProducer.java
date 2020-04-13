@@ -1,9 +1,7 @@
 package com.cedrus.aeolion.kafkaspringpong.kafka;
 
 import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
-import com.cedrus.aeolion.kafkaspringpong.model.Message;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -17,24 +15,29 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class SpringPongProducer {
-    private KafkaConfig kafkaConfig;
+  private final KafkaConfig kafkaConfig;
+  private final TopicConfig topicConfig;
 
-    @Autowired
-    public SpringPongProducer (KafkaConfig kafkaConfig) {
-        this.kafkaConfig = kafkaConfig;
-    }
+  @Autowired
+  public SpringPongProducer(KafkaConfig kafkaConfig, TopicConfig topicConfig) {
+    this.kafkaConfig = kafkaConfig;
+    this.topicConfig = topicConfig;
+  }
 
-    public void sendMessage(Message message) throws JsonProcessingException {
-        log.info("Sending message: " + message.getMessage() +" on topic " + message.getTopic());
+  public final void sendMessage(String message, String key) {
+    final Producer<String, String> producer = createProducer();
+    producer.send(new ProducerRecord<>(topicConfig.getPingPongTopic(), key, message));
+    producer.close();
+  }
 
-        String serializer = kafkaConfig.getSerializer();
+  private final Producer<String, String> createProducer() {
+    String serializer = kafkaConfig.getSerializer();
 
-        Properties kafkaProps = new Properties();
-        kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
-        kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializer);
-        kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializer);
-        Producer<String, String> producer = new KafkaProducer<>(kafkaProps);
-        producer.send(new ProducerRecord<>(message.getTopic(), null, new ObjectMapper().writeValueAsString(message)));
-        producer.close();
-    }
+    final Properties kafkaProps = new Properties();
+    kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
+    kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializer);
+    kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializer);
+    final Producer<String, String> producer = new KafkaProducer<>(kafkaProps);
+    return producer;
+  }
 }

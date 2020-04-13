@@ -1,39 +1,62 @@
 package com.cedrus.aeolion.kafkaspringpong.controller;
 
-import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
-import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongProducer;
-import com.cedrus.aeolion.kafkaspringpong.model.Message;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.cedrus.aeolion.kafkaspringpong.model.*;
+import com.cedrus.aeolion.kafkaspringpong.services.BallAdderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 public class SpringPongController {
-    private TopicConfig topicConfig;
-    private SpringPongProducer producer;
+  private final BallAdderService ballAdder;
 
-    @Autowired
-    public SpringPongController(TopicConfig topicConfig, SpringPongProducer producer) {
-        this.topicConfig = topicConfig;
-        this.producer = producer;
-    }
+  @Autowired
+  public SpringPongController(BallAdderService ballAdder) {
+    this.ballAdder = ballAdder;
+  }
 
-    @RequestMapping(value = "/ping", method = RequestMethod.POST)
-    @ResponseBody
-    public void producePing() throws JsonProcessingException {
-        createResponse(topicConfig.getPing());
-    }
+  @PostMapping(value = "/ball")
+  public ResponseEntity<SpringPongResponse> introduceBall(@RequestBody SpringPongRequest request) {
+    log.info("Received request to add ball.");
+    log.debug("Request = {}", request);
 
-    @RequestMapping(value = "/pong", method = RequestMethod.POST)
-    @ResponseBody
-    public void producePong() throws JsonProcessingException {
-        createResponse(topicConfig.getPong());
-    }
+    final SpringPongResponse responseObj = new SpringPongResponse();
 
-    private void createResponse(String topic) throws JsonProcessingException {
-        producer.sendMessage(new Message(topic, "1"));
+    if (request.getId() == null) {
+      responseObj.setSuccessIndicator(false);
+      responseObj.setResponseMessage("Ball ID not provided.");
+      return new ResponseEntity<>(responseObj, HttpStatus.BAD_REQUEST);
+    } else {
+      responseObj.setSuccessIndicator(true);
+      responseObj.setResponseMessage("OK!");
+      addBall(request);
+      return new ResponseEntity<>(responseObj, HttpStatus.OK);
     }
+  }
+
+  private ResponseEntity<SpringPongResponse> addBall(SpringPongRequest request) {
+    final SpringPongResponse response = new SpringPongResponse(true, request.toString());
+
+    try {
+      final SpringPongBall ball =
+          new SpringPongBall(request.getId(), request.getColor(), Target.PING);
+      ballAdder.addBall(ball);
+
+      response.setSuccessIndicator(true);
+      response.setResponseMessage("OK!");
+
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+      log.error("Internal server error.");
+      e.printStackTrace();
+
+      response.setSuccessIndicator(false);
+      response.setResponseMessage(e.getMessage());
+
+      return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

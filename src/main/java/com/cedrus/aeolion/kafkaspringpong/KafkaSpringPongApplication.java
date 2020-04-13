@@ -11,30 +11,30 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class KafkaSpringPongApplication {
-	private PingService pingService;
-	private PongService pongService;
+  private PingService pingService;
+  private PongService pongService;
 
-	@Autowired
-	public KafkaSpringPongApplication(PingService pingService, PongService pongService) {
-		this.pingService = pingService;
-		this.pongService = pongService;
-	}
+  @Autowired
+  public KafkaSpringPongApplication(PingService pingService, PongService pongService) {
+    this.pingService = pingService;
+    this.pongService = pongService;
+  }
 
-	public static void main(String[] args) {
-		SpringApplication.run(KafkaSpringPongApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(KafkaSpringPongApplication.class, args);
+  }
 
-	@Bean
-	public CommandLineRunner pingRunner(ApplicationContext context) {
-		return args -> {
-			((PingService) context.getBean("pingService")).startPing();
-		};
-	}
+  @Bean
+  public CommandLineRunner pingRunner(ApplicationContext context) {
+    return args -> {
+      ((PingService) context.getBean("pingService")).startPingStream();
+    };
+  }
 
-	@Bean
-	public CommandLineRunner pongRunner(ApplicationContext context) {
-		return args -> {
-			((PongService) context.getBean("pongService")).startPong();
-		};
-	}
+  @Bean
+  public CommandLineRunner pongRunner(ApplicationContext context) {
+    return args -> {
+      ((PongService) context.getBean("pongService")).startPongStream();
+    };
+  }
 }
