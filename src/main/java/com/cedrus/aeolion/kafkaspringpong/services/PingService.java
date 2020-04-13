@@ -16,8 +16,8 @@ import static com.cedrus.aeolion.kafkaspringpong.model.Target.*;
 @Slf4j
 @Service
 public class PingService {
-    private SpringPongTopology springPongTopology;
-    private KafkaConfig kafkaConfig;
+    private final SpringPongTopology springPongTopology;
+    private final KafkaConfig kafkaConfig;
 
     @Autowired
     public PingService(SpringPongTopology springPongTopology, KafkaConfig kafkaConfig) {

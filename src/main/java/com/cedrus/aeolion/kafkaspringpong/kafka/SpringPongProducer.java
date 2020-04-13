@@ -25,7 +25,7 @@ public class SpringPongProducer {
     }
 
     public void sendMessage(String message) {
-        log.info("Sending message: " + message +" on topic " + topicConfig.getPingPongTopic());
+        log.debug("Sending message: " + message +" on topic " + topicConfig.getPingPongTopic());
 
         String serializer = kafkaConfig.getSerializer();
 

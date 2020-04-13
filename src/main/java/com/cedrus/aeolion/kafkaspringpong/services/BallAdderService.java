@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class BallAdderService {
-    private SpringPongProducer producer;
-    private ObjectMapper objectMapper;
+    private final SpringPongProducer producer;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public BallAdderService(SpringPongProducer producer, ObjectMapper objectMapper) {
@@ -27,7 +27,7 @@ public class BallAdderService {
             log.info("Ball added.");
         } catch (Exception e) {
             log.error("Error adding ball.");
-            log.info(e.toString());
+            e.printStackTrace();
         }
     }
 }

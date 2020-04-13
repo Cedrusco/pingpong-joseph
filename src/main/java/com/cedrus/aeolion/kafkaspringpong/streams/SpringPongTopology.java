@@ -17,12 +17,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
+// TODO: identify unsafe/unchecked operations
+
 @Slf4j
 @Component
 public class SpringPongTopology {
-    private TopicConfig topicConfig;
-    private AppConfig appConfig;
-    private ObjectMapper objectMapper;
+    private final TopicConfig topicConfig;
+    private final AppConfig appConfig;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public SpringPongTopology(TopicConfig topicConfig, AppConfig appConfig, ObjectMapper objectMapper) {
@@ -77,11 +79,11 @@ public class SpringPongTopology {
 
             @Override
             public String transform(String ballAsString) {
-                log.info("Transforming ball: {}", ballAsString);
+                log.debug("Transforming ball: {}", ballAsString);
                 SpringPongBall springPongBall = getBallFromString(ballAsString);
 
                 int sleepDuration = getSleepDurationInSeconds();
-                log.info("Ball {} sleeping for {} seconds.", springPongBall.getId(), sleepDuration);
+                log.debug("Ball {} sleeping for {} seconds.", springPongBall.getId(), sleepDuration);
                 try {
                     Thread.sleep(sleepDuration * 1000);
                     springPongBall.changeTarget();

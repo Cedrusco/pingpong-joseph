@@ -8,12 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-// TODO: identify unchecked/unsafe operations
-
 @Slf4j
 @RestController
 public class SpringPongController {
-    private BallAdderService ballAdder;
+    private final BallAdderService ballAdder;
 
     @Autowired
     public SpringPongController(BallAdderService ballAdder) {
@@ -34,6 +32,7 @@ public class SpringPongController {
                 addBall(request);
             }
         } catch (Exception e) {
+            log.error("Bad request.");
             responseObj.setResponseMessage(e.getMessage());
             responseObj.setSuccessIndicator(false);
             return new ResponseEntity<>(responseObj, HttpStatus.BAD_REQUEST);
@@ -52,7 +51,7 @@ public class SpringPongController {
             SpringPongResponse response = new SpringPongResponse(true, request.toString());
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            log.error(e.toString());
+            log.error("Internal server error.");
             e.printStackTrace();
             SpringPongResponse response = new SpringPongResponse(false, e.getMessage());
             return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
