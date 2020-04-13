@@ -10,24 +10,24 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class BallAdderService {
-    private final SpringPongProducer producer;
-    private final ObjectMapper objectMapper;
+  private final SpringPongProducer producer;
+  private final ObjectMapper objectMapper;
 
-    @Autowired
-    public BallAdderService(SpringPongProducer producer, ObjectMapper objectMapper) {
-        this.producer = producer;
-        this.objectMapper = objectMapper;
-    }
+  @Autowired
+  public BallAdderService(SpringPongProducer producer, ObjectMapper objectMapper) {
+    this.producer = producer;
+    this.objectMapper = objectMapper;
+  }
 
-    public void addBall(SpringPongBall ball) {
-        try {
-            String ballId = ball.getId();
-            String jsonBall = objectMapper.writeValueAsString(ball);
-            producer.sendMessage(jsonBall, ballId);
-            log.info("Ball added.");
-        } catch (Exception e) {
-            log.error("Error adding ball.");
-            e.printStackTrace();
-        }
+  public void addBall(SpringPongBall ball) {
+    try {
+      String ballId = ball.getId();
+      String jsonBall = objectMapper.writeValueAsString(ball);
+      producer.sendMessage(jsonBall, ballId);
+      log.info("Ball added.");
+    } catch (Exception e) {
+      log.error("Error adding ball.");
+      e.printStackTrace();
     }
+  }
 }

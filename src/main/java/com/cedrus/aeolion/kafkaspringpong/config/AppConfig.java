@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "app")
 public class AppConfig {
-    private int minDelaySeconds;
-    private int maxDelaySeconds;
+  private int minDelaySeconds;
+  private int maxDelaySeconds;
 }

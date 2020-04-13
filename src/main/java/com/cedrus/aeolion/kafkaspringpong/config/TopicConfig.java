@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "app.topic")
 public class TopicConfig {
-    private String ping;
-    private String pong;
-    private String pingPongTopic;
+  private String ping;
+  private String pong;
+  private String pingPongTopic;
 }

@@ -16,24 +16,27 @@ import static com.cedrus.aeolion.kafkaspringpong.model.Target.*;
 @Slf4j
 @Service
 public class PingService {
-    private final SpringPongTopology springPongTopology;
-    private final KafkaConfig kafkaConfig;
+  private final SpringPongTopology springPongTopology;
+  private final KafkaConfig kafkaConfig;
 
-    @Autowired
-    public PingService(SpringPongTopology springPongTopology, KafkaConfig kafkaConfig) {
-        this.springPongTopology = springPongTopology;
-        this.kafkaConfig = kafkaConfig;
-    }
+  @Autowired
+  public PingService(SpringPongTopology springPongTopology, KafkaConfig kafkaConfig) {
+    this.springPongTopology = springPongTopology;
+    this.kafkaConfig = kafkaConfig;
+  }
 
-    public final void startPingStream() {
-        log.info("Starting Ping stream...");
-        final Properties pingStreamConfiguration = new Properties();
+  public final void startPingStream() {
+    log.info("Starting Ping stream...");
+    final Properties pingStreamConfiguration = new Properties();
 
-        pingStreamConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, kafkaConfig.getKafkaAppId() + PING);
-        pingStreamConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
+    pingStreamConfiguration.put(
+        StreamsConfig.APPLICATION_ID_CONFIG, kafkaConfig.getKafkaAppId() + PING);
+    pingStreamConfiguration.put(
+        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
 
-        final KafkaStreams pingStream = new KafkaStreams(springPongTopology.getSPTopology(PING), pingStreamConfiguration);
+    final KafkaStreams pingStream =
+        new KafkaStreams(springPongTopology.getSPTopology(PING), pingStreamConfiguration);
 
-        pingStream.start();
-    }
+    pingStream.start();
+  }
 }

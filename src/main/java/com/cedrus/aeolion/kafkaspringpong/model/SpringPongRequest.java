@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class SpringPongRequest {
-    @JsonProperty private String id;
-    @JsonProperty private String color;
+  @JsonProperty private String id;
+  @JsonProperty private String color;
 
-    public SpringPongRequest(String id, String color) {
-        this.id = id;
-        this.color = color;
-    }
+  public SpringPongRequest(String id, String color) {
+    this.id = id;
+    this.color = color;
+  }
 }

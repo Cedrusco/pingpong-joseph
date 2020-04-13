@@ -15,24 +15,27 @@ import static com.cedrus.aeolion.kafkaspringpong.model.Target.*;
 @Slf4j
 @Service
 public class PongService {
-    private final SpringPongTopology springPongTopology;
-    private final KafkaConfig kafkaConfig;
+  private final SpringPongTopology springPongTopology;
+  private final KafkaConfig kafkaConfig;
 
-    @Autowired
-    public PongService (SpringPongTopology springPongTopology, KafkaConfig kafkaConfig) {
-        this.springPongTopology = springPongTopology;
-        this.kafkaConfig = kafkaConfig;
-    }
+  @Autowired
+  public PongService(SpringPongTopology springPongTopology, KafkaConfig kafkaConfig) {
+    this.springPongTopology = springPongTopology;
+    this.kafkaConfig = kafkaConfig;
+  }
 
-    public final void startPongStream() {
-        log.info("Starting Pong stream...");
-        final Properties pongStreamConfiguration = new Properties();
+  public final void startPongStream() {
+    log.info("Starting Pong stream...");
+    final Properties pongStreamConfiguration = new Properties();
 
-        pongStreamConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, kafkaConfig.getKafkaAppId() + PONG);
-        pongStreamConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
+    pongStreamConfiguration.put(
+        StreamsConfig.APPLICATION_ID_CONFIG, kafkaConfig.getKafkaAppId() + PONG);
+    pongStreamConfiguration.put(
+        StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
 
-        final KafkaStreams pongStream = new KafkaStreams(springPongTopology.getSPTopology(PONG), pongStreamConfiguration);
+    final KafkaStreams pongStream =
+        new KafkaStreams(springPongTopology.getSPTopology(PONG), pongStreamConfiguration);
 
-        pongStream.start();
-    }
+    pongStream.start();
+  }
 }
