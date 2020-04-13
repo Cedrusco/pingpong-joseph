@@ -31,25 +31,28 @@ public class SpringPongTopology {
         this.objectMapper = objectMapper;
     }
 
-    public Topology getSPTopology(Target target) {
+    public final Topology getSPTopology(Target target) {
         Serde<String> stringSerde = Serdes.String();
-        StreamsBuilder builder = new StreamsBuilder();
 
-        KStream<String, String> initialStream = builder.stream(topicConfig.getPingPongTopic(), Consumed.with(stringSerde, stringSerde));
-        KStream<String, String> filteredStream = initialStream.branch(getBranchPredicate(target))[0];
-        KStream<String, String> nextStream = filteredStream.transformValues(sleepAndSerializeBall());
+        final StreamsBuilder builder = new StreamsBuilder();
+
+        final KStream<String, String> initialStream = builder.stream(topicConfig.getPingPongTopic(), Consumed.with(stringSerde, stringSerde));
+        final KStream<String, String> filteredStream = initialStream.branch(getBranchPredicate(target))[0];
+        final KStream<String, String> nextStream = filteredStream.transformValues(sleepAndSerializeBall());
+
         nextStream.to(topicConfig.getPingPongTopic(), Produced.with(stringSerde, stringSerde));
+
         return builder.build();
     }
 
-    private Predicate<String, String> getBranchPredicate(Target target) {
+    private final Predicate<String, String> getBranchPredicate(Target target) {
         return (key, value) -> {
             SpringPongBall ball = getBallFromString(value);
             return ball.getTarget().equals(target);
         };
     }
 
-    private SpringPongBall getBallFromString(String spbAsString) {
+    private final SpringPongBall getBallFromString(String spbAsString) {
         try {
             return objectMapper.readValue(spbAsString, SpringPongBall.class);
         } catch (Exception e) {
@@ -58,7 +61,7 @@ public class SpringPongTopology {
         }
     }
 
-    private String writeBallAsString(SpringPongBall springPongBall) {
+    private final String writeBallAsString(SpringPongBall springPongBall) {
         try {
             return objectMapper.writeValueAsString(springPongBall);
         } catch (Exception e) {
@@ -67,7 +70,7 @@ public class SpringPongTopology {
         }
     }
 
-    private ValueTransformerSupplier<String, String> sleepAndSerializeBall() {
+    private final ValueTransformerSupplier<String, String> sleepAndSerializeBall() {
         return () -> new ValueTransformer<String, String>() {
             @Override
             public void init(ProcessorContext context) { }

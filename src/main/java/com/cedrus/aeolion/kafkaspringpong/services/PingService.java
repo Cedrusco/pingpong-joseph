@@ -25,14 +25,14 @@ public class PingService {
         this.kafkaConfig = kafkaConfig;
     }
 
-    public void startPingStream() {
+    public final void startPingStream() {
         log.info("Starting Ping stream...");
-        Properties pingStreamConfiguration = new Properties();
+        final Properties pingStreamConfiguration = new Properties();
 
         pingStreamConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, kafkaConfig.getKafkaAppId() + PING);
         pingStreamConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
 
-        KafkaStreams pingStream = new KafkaStreams(springPongTopology.getSPTopology(PING), pingStreamConfiguration);
+        final KafkaStreams pingStream = new KafkaStreams(springPongTopology.getSPTopology(PING), pingStreamConfiguration);
 
         pingStream.start();
     }

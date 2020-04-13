@@ -1,8 +1,6 @@
 package com.cedrus.aeolion.kafkaspringpong.services;
 
-
 import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
-import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import com.cedrus.aeolion.kafkaspringpong.streams.SpringPongTopology;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
@@ -26,14 +24,14 @@ public class PongService {
         this.kafkaConfig = kafkaConfig;
     }
 
-    public void startPongStream() {
+    public final void startPongStream() {
         log.info("Starting Pong stream...");
-        Properties pongStreamConfiguration = new Properties();
+        final Properties pongStreamConfiguration = new Properties();
 
         pongStreamConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, kafkaConfig.getKafkaAppId() + PONG);
         pongStreamConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
 
-        KafkaStreams pongStream = new KafkaStreams(springPongTopology.getSPTopology(PONG), pongStreamConfiguration);
+        final KafkaStreams pongStream = new KafkaStreams(springPongTopology.getSPTopology(PONG), pongStreamConfiguration);
 
         pongStream.start();
     }

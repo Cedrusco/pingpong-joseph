@@ -23,37 +23,38 @@ public class SpringPongController {
         log.info("Received request to add ball.");
         log.debug("Request = {}", request);
 
-        SpringPongResponse responseObj = new SpringPongResponse();
+        final SpringPongResponse responseObj = new SpringPongResponse();
 
-        try {
-            if (request.getId() == null) {
-                throw new Exception("Ball ID required.");
-            } else {
-                addBall(request);
-            }
-        } catch (Exception e) {
-            log.error("Bad request.");
-            responseObj.setResponseMessage(e.getMessage());
+        if (request.getId() == null) {
             responseObj.setSuccessIndicator(false);
+            responseObj.setResponseMessage("Ball ID not provided.");
             return new ResponseEntity<>(responseObj, HttpStatus.BAD_REQUEST);
+        } else {
+            responseObj.setSuccessIndicator(true);
+            responseObj.setResponseMessage("OK!");
+            addBall(request);
+            return new ResponseEntity<>(responseObj, HttpStatus.OK);
         }
-
-        responseObj.setSuccessIndicator(true);
-        responseObj.setResponseMessage("OK!");
-
-        return new ResponseEntity<>(responseObj, HttpStatus.OK);
     }
 
     private ResponseEntity<SpringPongResponse> addBall(SpringPongRequest request) {
+        final SpringPongResponse response = new SpringPongResponse(true, request.toString());
+
         try {
-            SpringPongBall ball = new SpringPongBall(request.getId(), request.getColor(), Target.PING);
+            final SpringPongBall ball = new SpringPongBall(request.getId(), request.getColor(), Target.PING);
             ballAdder.addBall(ball);
-            SpringPongResponse response = new SpringPongResponse(true, request.toString());
+
+            response.setSuccessIndicator(true);
+            response.setResponseMessage("OK!");
+
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Internal server error.");
             e.printStackTrace();
-            SpringPongResponse response = new SpringPongResponse(false, e.getMessage());
+
+            response.setSuccessIndicator(false);
+            response.setResponseMessage(e.getMessage());
+
             return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -1,6 +1,5 @@
 package com.cedrus.aeolion.kafkaspringpong.services;
 
-import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import com.cedrus.aeolion.kafkaspringpong.kafka.SpringPongProducer;
 import com.cedrus.aeolion.kafkaspringpong.model.SpringPongBall;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,8 +21,9 @@ public class BallAdderService {
 
     public void addBall(SpringPongBall ball) {
         try {
+            String ballId = ball.getId();
             String jsonBall = objectMapper.writeValueAsString(ball);
-            producer.sendMessage(jsonBall);
+            producer.sendMessage(jsonBall, ballId);
             log.info("Ball added.");
         } catch (Exception e) {
             log.error("Error adding ball.");

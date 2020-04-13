@@ -24,17 +24,20 @@ public class SpringPongProducer {
         this.topicConfig = topicConfig;
     }
 
-    public void sendMessage(String message) {
-        log.debug("Sending message: " + message +" on topic " + topicConfig.getPingPongTopic());
+    public final void sendMessage(String message, String key) {
+        final Producer<String, String> producer = createProducer();
+        producer.send(new ProducerRecord<>(topicConfig.getPingPongTopic(), key, message));
+        producer.close();
+    }
 
+    private final Producer<String, String> createProducer() {
         String serializer = kafkaConfig.getSerializer();
 
-        Properties kafkaProps = new Properties();
+        final Properties kafkaProps = new Properties();
         kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
         kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializer);
         kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializer);
-        Producer<String, String> producer = new KafkaProducer<>(kafkaProps);
-        producer.send(new ProducerRecord<>(topicConfig.getPingPongTopic(), null, message));
-        producer.close();
+        final Producer<String, String> producer = new KafkaProducer<>(kafkaProps);
+        return producer;
     }
 }
