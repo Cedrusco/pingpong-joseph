@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
-// TODO: identify unsafe/unchecked operations
-
 @Slf4j
 @Component
 public class SpringPongTopology {
@@ -45,12 +43,9 @@ public class SpringPongTopology {
     }
 
     private Predicate<String, String> getBranchPredicate(Target target) {
-        return new Predicate<String, String>() {
-            @Override
-            public boolean test(String key, String value) {
-                SpringPongBall ball = getBallFromString(value);
-                return ball.getTarget().equals(target);
-            }
+        return (key, value) -> {
+            SpringPongBall ball = getBallFromString(value);
+            return ball.getTarget().equals(target);
         };
     }
 
