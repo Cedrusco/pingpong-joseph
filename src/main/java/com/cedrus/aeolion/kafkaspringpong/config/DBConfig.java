@@ -3,12 +3,14 @@ package com.cedrus.aeolion.kafkaspringpong.config;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
 @Getter
+@PropertySource("classpath:database.properties")
 public class DBConfig {
     @Autowired private Environment env;
 
