@@ -2,13 +2,14 @@ package com.cedrus.aeolion.kafkaspringpong.dao;
 
 import com.cedrus.aeolion.kafkaspringpong.model.SpringPongBall;
 import com.cedrus.aeolion.kafkaspringpong.util.SpringPongRowMapper;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.List;
 
+@Component
 public class SpringPongDaoImpl implements SpringPongDao {
     private final JdbcTemplate jdbcTemplate;
     private final SpringPongRowMapper springPongRowMapper;
@@ -20,8 +21,8 @@ public class SpringPongDaoImpl implements SpringPongDao {
     }
 
     public SpringPongBall getBallById(String id) {
-        final String sql = "SELECT * FROM spring_pong WHERE id = " + id;
-        return jdbcTemplate.queryForObject(sql, springPongRowMapper);
+        final String sql = "SELECT * FROM spring_pong WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[] { id }, springPongRowMapper);
     }
 
     public List<SpringPongBall> getAll() {
@@ -29,18 +30,18 @@ public class SpringPongDaoImpl implements SpringPongDao {
         return jdbcTemplate.query(sql, springPongRowMapper);
     }
 
-    public int createBall(@NotNull SpringPongBall spb) {
+    public int createBall(SpringPongBall spb) {
         final String sql = "INSERT INTO spring_pong (id, color, target) VALUES (?, ?, ?)";
-        return jdbcTemplate.update(sql, spb.getId(), spb.getColor(), spb.getTarget());
+        return jdbcTemplate.update(sql, spb.getId(), spb.getColor(), spb.getTarget().toString());
     }
 
-    public int updateBall(@NotNull SpringPongBall spb) {
-        final String sql = "UPDATE spring_pong SET target = ?, color = ? WHERE ballId = ?";
-        return jdbcTemplate.update(sql, spb.getTarget(), spb.getColor(), spb.getId());
+    public int updateBall(SpringPongBall spb) {
+        final String sql = "UPDATE spring_pong SET target = ?, color = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, spb.getTarget().toString(), spb.getColor(), spb.getId());
     }
 
-    public int deleteBall(@NotNull SpringPongBall spb) {
-        final String sql = "DELETE FROM spring_pong WHERE ballId = ?";
+    public int deleteBall(SpringPongBall spb) {
+        final String sql = "DELETE FROM spring_pong WHERE id = ?";
         return jdbcTemplate.update(sql, spb.getId());
     }
 }

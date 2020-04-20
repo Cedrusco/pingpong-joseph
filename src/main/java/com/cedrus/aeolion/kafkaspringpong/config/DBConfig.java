@@ -3,6 +3,8 @@ package com.cedrus.aeolion.kafkaspringpong.config;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -10,6 +12,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import javax.sql.DataSource;
 
 @Getter
+@ComponentScan("com.cedrus.aeolion.kafkaspringpong")
 @PropertySource("classpath:database.properties")
 public class DBConfig {
     @Autowired private Environment env;
@@ -20,7 +23,7 @@ public class DBConfig {
     private static final String PASSWORD = "password";
 
     @Bean
-    private DataSource initDataSource() {
+    private final DataSource initDataSource() {
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
 
         driverManagerDataSource.setDriverClassName(env.getProperty(DRIVER));

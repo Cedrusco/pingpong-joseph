@@ -2,7 +2,6 @@ package com.cedrus.aeolion.kafkaspringpong.util;
 
 import com.cedrus.aeolion.kafkaspringpong.model.SpringPongBall;
 import com.cedrus.aeolion.kafkaspringpong.model.Target;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,7 @@ import java.sql.SQLException;
 public class SpringPongRowMapper implements RowMapper<SpringPongBall> {
 
     @Override
-    public SpringPongBall mapRow(@NotNull ResultSet rs, int rowNum) throws SQLException {
+    public final SpringPongBall mapRow(ResultSet rs, int rowNum) throws SQLException {
         SpringPongBall spb = new SpringPongBall();
 
         spb.setId(rs.getString("id"));
