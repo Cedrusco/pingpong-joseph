@@ -37,7 +37,7 @@ public class SpringPongProducer {
     kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServers());
     kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, serializer);
     kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, serializer);
-    final Producer<String, String> producer = new KafkaProducer<>(kafkaProps);
-    return producer;
+
+    return new KafkaProducer<>(kafkaProps);
   }
 }
