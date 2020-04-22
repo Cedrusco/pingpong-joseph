@@ -56,7 +56,7 @@ public class SpringPongController {
       response.setSuccessIndicator(false);
       response.setResponseMessage(e.getMessage());
 
-      return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

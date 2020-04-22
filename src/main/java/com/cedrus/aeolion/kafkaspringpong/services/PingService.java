@@ -1,7 +1,6 @@
 package com.cedrus.aeolion.kafkaspringpong.services;
 
 import com.cedrus.aeolion.kafkaspringpong.config.KafkaConfig;
-import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
 import com.cedrus.aeolion.kafkaspringpong.streams.SpringPongTopology;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
@@ -38,5 +37,7 @@ public class PingService {
         new KafkaStreams(springPongTopology.getSPTopology(PING), pingStreamConfiguration);
 
     pingStream.start();
+
+    Runtime.getRuntime().addShutdownHook(new Thread(pingStream::close));
   }
 }

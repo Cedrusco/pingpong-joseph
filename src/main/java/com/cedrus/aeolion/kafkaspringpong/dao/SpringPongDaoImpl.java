@@ -21,7 +21,7 @@ public class SpringPongDaoImpl implements SpringPongDao {
     }
 
     public SpringPongBall getBallById(String id) {
-        final String sql = "SELECT * FROM spring_pong WHERE id = ?";
+        final String sql = "SELECT * FROM spring_pong WHERE ballId = ?";
         return jdbcTemplate.queryForObject(sql, new Object[] { id }, springPongRowMapper);
     }
 
@@ -31,12 +31,12 @@ public class SpringPongDaoImpl implements SpringPongDao {
     }
 
     public int createBall(SpringPongBall spb) {
-        final String sql = "INSERT INTO spring_pong (id, color, target) VALUES (?, ?, ?)";
+        final String sql = "INSERT INTO spring_pong (ballId, color, target) VALUES (?, ?, ?)";
         return jdbcTemplate.update(sql, spb.getId(), spb.getColor(), spb.getTarget().toString());
     }
 
     public int updateBall(SpringPongBall spb) {
-        final String sql = "UPDATE spring_pong SET target = ?, color = ? WHERE id = ?";
+        final String sql = "UPDATE spring_pong SET target = ?, color = ? WHERE ballId = ?";
         return jdbcTemplate.update(sql, spb.getTarget().toString(), spb.getColor(), spb.getId());
     }
 

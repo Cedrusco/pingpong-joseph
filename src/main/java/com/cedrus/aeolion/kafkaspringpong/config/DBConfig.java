@@ -10,8 +10,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.util.Objects;
 
 @Getter
+@Configuration
 @ComponentScan("com.cedrus.aeolion.kafkaspringpong")
 @PropertySource("classpath:database.properties")
 public class DBConfig {
@@ -23,10 +25,10 @@ public class DBConfig {
     private static final String PASSWORD = "password";
 
     @Bean
-    private final DataSource initDataSource() {
+    DataSource initDataSource() {
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
 
-        driverManagerDataSource.setDriverClassName(env.getProperty(DRIVER));
+        driverManagerDataSource.setDriverClassName(Objects.requireNonNull(env.getProperty(DRIVER)));
         driverManagerDataSource.setUrl(env.getProperty(URL));
         driverManagerDataSource.setUsername(env.getProperty(USER));
         driverManagerDataSource.setPassword(env.getProperty(PASSWORD));

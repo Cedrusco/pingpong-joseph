@@ -1,5 +1,6 @@
 package com.cedrus.aeolion.kafkaspringpong;
 
+import com.cedrus.aeolion.kafkaspringpong.config.DBConfig;
 import com.cedrus.aeolion.kafkaspringpong.services.PingService;
 import com.cedrus.aeolion.kafkaspringpong.services.PongService;
 import org.springframework.beans.factory.annotation.Autowired;

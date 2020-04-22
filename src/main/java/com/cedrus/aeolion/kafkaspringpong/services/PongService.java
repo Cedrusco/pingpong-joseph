@@ -37,5 +37,7 @@ public class PongService {
         new KafkaStreams(springPongTopology.getSPTopology(PONG), pongStreamConfiguration);
 
     pongStream.start();
+
+    Runtime.getRuntime().addShutdownHook(new Thread(pongStream::close));
   }
 }

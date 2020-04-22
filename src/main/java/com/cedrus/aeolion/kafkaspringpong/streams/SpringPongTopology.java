@@ -2,6 +2,7 @@ package com.cedrus.aeolion.kafkaspringpong.streams;
 
 import com.cedrus.aeolion.kafkaspringpong.config.AppConfig;
 import com.cedrus.aeolion.kafkaspringpong.config.TopicConfig;
+import com.cedrus.aeolion.kafkaspringpong.dao.SpringPongDaoImpl;
 import com.cedrus.aeolion.kafkaspringpong.model.SpringPongBall;
 import com.cedrus.aeolion.kafkaspringpong.model.Target;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.TimestampExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,13 +25,15 @@ public class SpringPongTopology {
   private final TopicConfig topicConfig;
   private final AppConfig appConfig;
   private final ObjectMapper objectMapper;
+  private final SpringPongDaoImpl springPongDao;
 
   @Autowired
   public SpringPongTopology(
-      TopicConfig topicConfig, AppConfig appConfig, ObjectMapper objectMapper) {
+      TopicConfig topicConfig, AppConfig appConfig, ObjectMapper objectMapper, SpringPongDaoImpl springPongDao) {
     this.topicConfig = topicConfig;
     this.appConfig = appConfig;
     this.objectMapper = objectMapper;
+    this.springPongDao = springPongDao;
   }
 
   public final Topology getSPTopology(Target target) {
@@ -43,6 +47,12 @@ public class SpringPongTopology {
         initialStream.branch(getBranchPredicate(target))[0];
     final KStream<String, String> nextStream =
         filteredStream.transformValues(sleepAndSerializeBall());
+
+    nextStream.foreach((key, value) -> {
+      SpringPongBall springPongBall = getBallFromString(value);
+      log.debug("Inserting ball {} into database.", springPongBall);
+      springPongDao.createBall(springPongBall);
+    });
 
     nextStream.to(topicConfig.getPingPongTopic(), Produced.with(stringSerde, stringSerde));
 
